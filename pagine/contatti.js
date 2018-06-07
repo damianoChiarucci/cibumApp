@@ -30,8 +30,6 @@ export default class App extends React.Component {
         >
           <MapView.Marker
           coordinate={{latitude: 37.78825,longitude: -122.4324}}
-
-          image={require('../assets/img/carne.png')}
           />
         </MapView>
       </View>
