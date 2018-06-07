@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createBottomTabNavigator } from 'react-navigation';
-import Home from './pagine/home';
+import Home from './pagine/home-nav';
 import Contatti from './pagine/contatti';
 import Ricette from './pagine/ricette-nav';
 import ChiSiamo from './pagine/chi-siamo';
@@ -27,7 +27,7 @@ const Tab = createBottomTabNavigator(
     },
     Ricette: {
       screen: Ricette,
-      path: '/ricette',
+      path: 'ricette/:dettaglio',
       navigationOptions: {
         tabBarLabel: 'Ricette',
         tabBarIcon: ({ tintColor, focused }) => (

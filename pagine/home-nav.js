@@ -7,11 +7,13 @@ import Home from './home';
 
 const RootStack = createStackNavigator(
     {
-      Ricette: Ricette,
-      DettaglioRicetta: DettaglioRicetta,
+        Home: Home,
+        DettaglioRicetta: DettaglioRicetta,
+        Ricette: Ricette,
+
     },
     {
-      initialRouteName: 'Ricette',
+      initialRouteName: 'Home',
     },
     {
         headerMode: 'none',
@@ -23,7 +25,7 @@ const RootStack = createStackNavigator(
 
 
   
-  export default class RicetteNav extends React.Component {
+  export default class HomeNav extends React.Component {
 
     render() {
       return <RootStack />;

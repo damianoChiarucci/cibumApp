@@ -25,7 +25,7 @@ export default class DettaglioRicetta extends React.Component {
                         color='white'
 
                 onPress={() =>
-                    this.props.navigation.navigate('Ricette')}
+                    this.props.navigation.goBack()}
                 />;
 
     let titolo = <Text
