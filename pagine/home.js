@@ -3,6 +3,7 @@ import { Text, View, Image, StyleSheet, Dimensions, ImageBackground } from 'reac
 import Carousel from "react-native-carousel-control";
 import { Card, ListItem, Button, Icon, SearchBar } from 'react-native-elements';
 import { Font } from 'expo';
+import Header from './moduli/header';
 
 
 const categorie = [
@@ -67,6 +68,7 @@ getData(){
       return (
 
         <View style={styles.page}>
+        <Header/>
             <View style={styles.header}>
               <ImageBackground
                 style={styles.headerImg}
@@ -141,9 +143,6 @@ const styles = StyleSheet.create({
 
 page: {
     flex: 1,
-    borderRadius: 5,
-
-    justifyContent: 'space-between',
 },
 header: {
   flex: 1,
@@ -200,27 +199,26 @@ carousel2: {
   justifyContent: 'space-between',
 },
 title: {
-  fontSize: 19,
+  fontSize: 18,
   fontWeight: '100',
-  color: '#fff',
-  textAlign: 'center',
-  fontFamily: 'pacifico'
+  color: '#e43636',
+  textAlign: 'left',
 },
 titleBg: {
-  backgroundColor: 'rgba(228, 54, 54, 0.9)',
+  backgroundColor:'rgba(255,255,255,0.9)', //'rgba(228, 54, 54, 0.9)',
   padding: 5,
 },
 
 containerCard: {
   borderWidth: 0,
   borderRadius: 5,
-  borderColor: '#fff',
+  borderColor: '#e43636',
   borderBottomWidth: 0,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.5,
-  shadowRadius: 2,
-  elevation: -5,
+  shadowColor: '#',
+  shadowOffset: { width: 2, height: 2 },
+  shadowOpacity: 0.4,
+  shadowRadius: 1,
+  elevation: 3,
   marginLeft: 5,
   marginRight: 5,
   marginTop: 10,

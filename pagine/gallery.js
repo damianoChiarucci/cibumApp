@@ -9,8 +9,9 @@ import {
     StyleSheet,
     Dimensions,
 } from 'react-native';
-import { List, ListItem, Header, Button } from "react-native-elements";
+import { List, ListItem, Button } from "react-native-elements";
 import Modal from 'react-native-modalbox';
+import Header from './moduli/header';
 
 const {width} = Dimensions.get('window');
 
@@ -87,13 +88,8 @@ export default class GalleryPage extends Component {
 
 
         return (
-            <View style={styles.container}>
-                    <Header
-          
-          centerComponent={<Text>Cibum</Text>}
-          backgroundColor='#e43636'
-          outerContainerStyles={style= {borderBottomWidth: 0}}
-        />
+            <View>
+              <Header/>
                 <ScrollView>
                     {this.state.data.map((item, index) => (
                         <TouchableOpacity
