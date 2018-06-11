@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, View, Image, StyleSheet, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
+import { Text, View, Image, StyleSheet, Dimensions, ImageBackground, TouchableOpacity, TouchableHighlight,FlatList, Animated, TextInput } from 'react-native';
 import Carousel from "react-native-carousel-control";
-import { Card, ListItem, Button, Icon, SearchBar } from 'react-native-elements';
+import { Card, Button, Icon, SearchBar } from 'react-native-elements';
 import { Font } from 'expo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from './moduli/header';
@@ -38,13 +38,20 @@ export default class Home extends React.Component {
     this.state = {
         data:[],
         loading: true,
+        testo:'',
+        search: false,
+        ris:[],
+        searchFocus:false,
     };
 
+    this.onSearchHandle = this.onSearchHandle.bind(this);
+    this.renderRes= this.renderRes.bind(this);
+    this._onBlur=this._onBlur.bind(this);
+    this._onFocus=this._onFocus.bind(this);
 }
 
 componentDidMount(){
   this.getData();
-
 }
 
 async componentWillMount(){
@@ -62,9 +69,71 @@ getData(){
         data: res
       });
     
-})
+  })
 }
+
+onSearchHandle(e){
+  
+  const campo = this.state.data.map((item, key) =>
+    item.nome);
+    
+  
+  const risultati = campo.reduce(function(accumulatore, valoreCorrente){
+    if (valoreCorrente.search(new RegExp(e, "i")) > -1) {
+       accumulatore.push(valoreCorrente);
+       ;
+    }
+    return accumulatore
+  },[]);
+  
+  this.setState({
+    testo:e,
+    search: true,
+    ris:risultati
+  })
+
+
+
+  
+}
+
+renderRes(){
+  if(this.state.testo==""){
+    return
+  }else{
+    if(this.state.search){
+      return <FlatList
+      keyExtractor={item => item}
+      data={this.state.ris.slice(0,3)}
+      renderItem={({item}) => 
+        <TouchableOpacity
+        //onPress={() => this._onPress(item)}
+
+        >
+        <View style={{ borderBottomColor:'rgba(228,54,54,.9)',  marginVertical:4, borderRadius:20, backgroundColor:'#fff',}}>
+          <Text style={{color: 'rgb(228,54,54)', textAlign:'center', paddingVertical:2, fontSize:13}}>{item}</Text>
+        </View>
+      </TouchableOpacity>
+    }
+      />
+      }
+  }
+}
+_onBlur(){
+  this.setState({searchFocus:false})
+}
+_onFocus(){
+  this.setState({searchFocus:true});
+}
+
+
+
+
+
     render() {
+
+      
+
       if (this.state.loading) {
         return(<View></View>);
       }
@@ -75,31 +144,40 @@ getData(){
         <Header/>
             <View style={styles.header}>
               <ImageBackground
-                style={styles.headerImg}
+                style={this.state.searchFocus ? styles.headerImg : styles.headerImgInactive  }
                 resizeMode="cover"
                 source={require('../assets/img/header.png')}
               >
-                <SearchBar
-                containerStyle={styles.searchBarCont}
-                inputContainerStyle={styles.searchBar}
-                inputStyle={styles.searchBar}
-                lightTheme
+              <View style={styles.searchBarCont}>
+                <TextInput
+                  
+                  style={styles.searchBar}
+                  
+                  
+                  onFocus={()=>this._onFocus()}
+                  onBlur={()=>this._onBlur()}
+                  onChangeText={(testo)=> this.onSearchHandle(testo)}          
+                  //value={this.state.testo}      
+                  value={this.state.testo}
+                  placeholder='Cerca una ricetta' />
+              </View>
                 
-                //onChangeText={}
-                //onClear={}
-                placeholder='Type Here...' />
+              <View style={{width:'85%',}}>{this.renderRes()}</View>
               </ImageBackground>
+              
             </View> 
-
+            
             <View style={styles.subTitleBg}>
                       <Text style={styles.subTitle}>Scegli una categoria</Text>
+                      
+                      
             </View>
 
             
             <View style={{flexDirection: 'row', justifyContent:'center'}}>
               {categorie.map( p =>
               <TouchableOpacity 
-              key={p.id} style={styles.containerCardCat} >
+              key={p.id} style={styles.containerCardCat}  >
                 
                   <ImageBackground
                       style={styles.imgBg}
@@ -117,7 +195,6 @@ getData(){
             <View style={styles.subTitleBg}>
                       <Text style={styles.subTitle}>Ricette della settimana</Text>
             </View>
-
             <Carousel sneak={40} style={styles.carousel2} >
               {this.state.data.map( item =>
               
@@ -162,12 +239,17 @@ getData(){
               </TouchableOpacity>
               )}
             </Carousel>
+            
 
 
     </View>
       );
     }
 }
+
+
+
+
 
 const styles = StyleSheet.create({
 
@@ -182,25 +264,36 @@ header: {
 
 headerImg: {
   flex: 1,
+ justifyContent: 'flex-start',
+ alignItems: 'center',
+ paddingVertical: 20,
+
+  width: Dimensions.get('window').width,
+},
+headerImgInactive: {
+  flex: 1,
  justifyContent: 'flex-end',
  alignItems: 'center',
- paddingBottom: 20,
+ paddingVertical: 20,
 
   width: Dimensions.get('window').width,
 },
 searchBarCont: {
   justifyContent: 'center',
-  width: '80%',
+  width: '90%',
   height: 20,
   backgroundColor: 'white', 
-  borderRadius: 15
+  borderRadius: 15,
+  borderWidth:0
 },
 searchBar: {
  backgroundColor: 'transparent',
-  width: '80%',
+  width: '100%',
   height: 15,
   fontSize: 10,
   fontWeight: '200',
+  borderWidth: 0,
+  textAlign:'center'
 
 },
 subTitle: {
@@ -275,7 +368,6 @@ containerCardCat: {
 },
 imgBg: {
   justifyContent:'space-between',
-
   height: (Dimensions.get('window').height)/(5),
 },
 badge:{
