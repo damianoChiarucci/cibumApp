@@ -1,90 +1,55 @@
-import React from 'react';
-import { Text, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { createBottomTabNavigator } from 'react-navigation';
-import Home from './pagine/home-nav';
-import Contatti from './pagine/contatti';
-import Ricette from './pagine/ricette-nav';
-import ChiSiamo from './pagine/chi-siamo';
-import Gallery from './pagine/gallery';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider, connect } from 'react-redux';
+import reducer from './pagine/redux/reducers/index';
+import RepoList from './pagine/home';
+import Tab from './Tab';
+import store from './pagine/redux/store';
+import { Asset, AppLoading } from 'expo';
 
-const Tab = createBottomTabNavigator(
-  {
-    Home: {
-      screen: Home,
-      path: '/',
-      navigationOptions: {
-        tabBarLabel: 'Home',
-        tabBarIcon: ({ tintColor, focused }) => (
-          <Ionicons
-            name={focused ? 'ios-home' : 'ios-home-outline'}
-            size={26}
-            style={{ color: tintColor  }}
-          />
-        ),
-      },
-    },
-    Ricette: {
-      screen: Ricette,
-      path: 'ricette/:dettaglio',
-      navigationOptions: {
-        tabBarLabel: 'Ricette',
-        tabBarIcon: ({ tintColor, focused }) => (
-          <Ionicons
-            name={focused ? 'ios-restaurant' : 'ios-restaurant-outline'}
-            size={26}
-            style={{ color: tintColor }}
-          />
-        ),
-      },
-    },
 
-    Gallery: {
-      screen: Gallery,
-      path: '/gallery',
-      navigationOptions: {
-        tabBarLabel: 'Gallery',
-        tabBarIcon: ({ tintColor, focused }) => (
-          <Ionicons
-            name={focused ? 'ios-aperture' : 'ios-aperture-outline'}
-            size={26}
-            style={{ color: tintColor }}
-          />
-        ),
-      },
-    },
 
-    Contatti: {
-      screen: Contatti,
-      path: '/contatti',
-      navigationOptions: {
-        tabBarLabel: 'Contatti',
-        tabBarIcon: ({ tintColor, focused }) => (
-          <Ionicons
-            name={focused ? 'ios-contacts' : 'ios-contacts-outline'}
-            size={26}
-            style={{ color: tintColor }}
-          />
-        ),
-      },
+export default class App extends Component {
+  state = {
+    isReady: false,
+  };
+  render() {
+    if (!this.state.isReady) {
+      return (
+        <AppLoading
+          startAsync={this._cacheResourcesAsync}
+          onFinish={() => this.setState({ isReady: true })}
+          onError={console.warn}
+        />
+      );
     }
-  },
-  {
-      tabBarOptions: {
-        activeTintColor: '#e43636',
-        inactiveTintColor: 'gray',
-        showLabel:true,
-        style: {
-          //backgroundColor: 'blue',
-        },
-      },
-   
-  },
 
+    return (
+      <Provider store={store}>  
+        <Tab/> 
+      </Provider>
+    );
+  }
 
+  async _cacheResourcesAsync() {
+    const images = [
+      require('./assets/img/CibumAppXXL.png'),
+      require('./assets/img/cibumLogo.png'),
+    ];
 
-);
+    const cacheImages = images.map((image) => {
+      return Asset.fromModule(image).downloadAsync();
+    });
+    return Promise.all(cacheImages)
 
+  }
+}
 
-export default Tab;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    marginTop: 50
+  }
+});

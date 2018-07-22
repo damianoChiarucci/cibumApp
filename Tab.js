@@ -3,48 +3,14 @@ import { Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createBottomTabNavigator } from 'react-navigation';
-import Home from './pagine/home';
+import Home from './pagine/home-nav';
 import Contatti from './pagine/contatti';
 import Ricette from './pagine/ricette-nav';
 import ChiSiamo from './pagine/chi-siamo';
-import Gallery from './pagine/gallery';
+import Gallery from './pagine/preferiti-nav';
+import { NavigationActions } from 'react-navigation'
 
-
-const Nav = createBottomTabNavigator({
-    Home : Home,
-    ChiSiamo: ChiSiamo,
-    Gallery: Gallery,
-    Ricette: Ricette,
-    Contatti: Contatti,
-  },
-  {
-    navigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ focused, tintColor }) => {
-        const { routeName } = navigation.state;
-        let iconName;
-        if (routeName === 'ChiSiamo') {
-          iconName = `face`;
-        } else if (routeName === 'Contatti') {
-          iconName = `contacts`;
-        } else if (routeName === 'Gallery') {
-          iconName = `photo-library`;
-        } else if (routeName === 'Ricette') {
-          iconName = `local-dining`;
-        }
-        // You can return any component that you like here! We usually use an
-        // icon component from react-native-vector-icons
-        return <Icon name={iconName} size={25} color={tintColor} />;
-      },
-    }),
-
-    tabBarOptions: {
-      activeTintColor: '#e43636',
-      inactiveTintColor: 'gray',
-    },
-  }
-);
-
-const StacksInTabs = createBottomTabNavigator(
+const Tab = createBottomTabNavigator(
   {
     Home: {
       screen: Home,
@@ -54,33 +20,76 @@ const StacksInTabs = createBottomTabNavigator(
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
             name={focused ? 'ios-home' : 'ios-home-outline'}
-            size={26}
-            style={{ color: tintColor }}
+            size={35}
+            style={{ color: tintColor  }}
           />
         ),
       },
     },
     Ricette: {
       screen: Ricette,
-      path: '/settings',
+      path: 'ricette/:dettaglio',
       navigationOptions: {
-        tabBarLabel: 'Settings',
+        tabBarLabel: 'Ricette',
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
-            name={focused ? 'ios-settings' : 'ios-settings-outline'}
-            size={26}
+            name={focused ? 'ios-restaurant' : 'ios-restaurant-outline'}
+            size={35}
             style={{ color: tintColor }}
           />
         ),
       },
     },
+
+    Gallery: {
+      screen: Gallery,
+      path: '/gallery',
+      navigationOptions: {
+        tabBarLabel: 'Gallery',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'md-heart' : 'md-heart-outline'}
+            size={35}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
+
+    Contatti: {
+      screen: Contatti,
+      path: '/contatti',
+      navigationOptions: {
+        tabBarLabel: 'Contatti',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'ios-contacts' : 'ios-contacts-outline'}
+            size={35}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    }
   },
   {
-    tabBarOptions: {
-      showLabel: false,
-    },
-  }
+    tabBarPosition:'bottom',
+      tabBarOptions: {
+        activeTintColor: '#e43636',
+        inactiveTintColor: 'gray',
+        showLabel:false,
+        style: {
+         
+        },
+      },
+   
+  },
+
+
+
 );
 
 
-export default StacksInTabs;
+
+
+
+export default Tab;
