@@ -1,14 +1,17 @@
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {  createStackNavigator,} from 'react-navigation';
+import {  createStackNavigator, NavigationActions } from 'react-navigation';
 import Ricette from './ricette';
 import DettaglioRicetta from './dettaglio-ricetta';
 import Home from './home';
 
+
+
+
 const RootStack = createStackNavigator(
     {
-      Ricette: Ricette,
-      DettaglioRicetta: DettaglioRicetta,
+      DettaglioRicetta: { screen: DettaglioRicetta},
+      Ricette: { screen: Ricette},
     },
     {
       initialRouteName: 'Ricette',
@@ -16,16 +19,20 @@ const RootStack = createStackNavigator(
     {
         headerMode: 'none',
         navigationOptions: {
-          headerVisible: false,
+          headerVisible: true,
         }
     }
   );
 
-
-  
-  export default class RicetteNav extends React.Component {
-
-    render() {
-      return <RootStack />;
+  RootStack.navigationOptions = ({ navigation }) => {
+    let tabBarVisible = true;
+    if (navigation.state.index > 0) {
+      tabBarVisible = false;
     }
+  
+    return {
+      tabBarVisible,
+    };
   }
+  
+  export default RootStack;

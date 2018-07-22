@@ -1,24 +1,30 @@
 import React from 'react';
 import { FlatList, ActivityIndicator, Text, View, Image, TouchableOpacity, Platform, ScrollView, StyleSheet, Dimensions, ImageBackground, Animated, Easing, NativeModules} from 'react-native';
-
+import { List, ListItem, Header } from "react-native-elements";
+import {  createStackNavigator,} from 'react-navigation';
+import DettaglioRicetta from './dettaglio-ricetta';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
 import { fetchPosts, fetchLikes, updateLikes, removeLikes, removeLike } from './redux/actions/postActions';
+
 
 const { StatusBarManager } = NativeModules;
 
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBarManager.HEIGHT;
 const HEADER_HEIGHT = STATUSBAR_HEIGHT+(Dimensions.get('window').width/6); 
+class Risultato extends React.Component {
 
+  static navigationOptions =
 
-class Ricette extends React.Component {
+  ({ navigation }) => {
+    return {
+      
+  headerleft: 'Indietro',
 
-  static navigationOptions= {
-    header: null,
-
-  }
-  static navigatorStyle = {
-    // drawUnderNavBar: Platform.OS !== 'ios' 
+    headerTintColor:'#fff',
+    headerStyle:{backgroundColor:'#e43636'},
+      title: navigation.getParam('categoria'),
+    };
   };
 
   constructor(props){
@@ -31,69 +37,71 @@ class Ricette extends React.Component {
     this.notLike=this.notLike.bind(this);
     this.onPressLike=this.onPressLike.bind(this);
   }
+componentDidMount(){
 
+}
 
+onPressLike(id){
 
-  componentDidMount(){
+  this.props.likes.indexOf(id)>=0 ? this.notLike(id):this.liked(id);
 
+}
 
+async liked(idNew){
+  const likeAnimValue = this.state.likeAnimated;
+  const propsRec = this.props;
+  this.props.updateLikes(idNew, this.props.likes);
+
+  likeAnimValue.setValue(0)
+  Animated.timing(this.state.likeAnimated, {
+      toValue: 1,
+      duration: 500,
+      easing: Easing.bounce
+  }).start(()=>onEndAnim());
+    
+  function onEndAnim (){
+    likeAnimValue.setValue(0);
+    propsRec.removeLike();
   }
+}
 
-  onPressLike(id){
+async notLike(idRemove){
 
-    this.props.likes.indexOf(id)>=0 ? this.notLike(id):this.liked(id);
-  
-  }
-  
-  async liked(idNew){
-    const likeAnimValue = this.state.likeAnimated;
-    const propsRec = this.props;
-    this.props.updateLikes(idNew, this.props.likes);
-  
-    likeAnimValue.setValue(0)
-    Animated.timing(this.state.likeAnimated, {
-        toValue: 1,
-        duration: 500,
-        easing: Easing.bounce
-    }).start(()=>onEndAnim());
-      
-    function onEndAnim (){
-      likeAnimValue.setValue(0);
-      propsRec.removeLike();
-    }
-  }
-  
-  async notLike(idRemove){
-  
-    this.props.removeLikes(idRemove, this.props.likes);
-  
-    this.state.likeAnimated.setValue(0)
-    Animated.timing(this.state.likeAnimated, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.elastic
-    }).start()
-  }
+  this.props.removeLikes(idRemove, this.props.likes);
+
+  this.state.likeAnimated.setValue(0)
+  Animated.timing(this.state.likeAnimated, {
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.elastic
+  }).start()
+}
 
   render(){
-    let titolo = <Text style={{color:'white', fontSize:25, marginTop:15}}>
-                  Ricette
-                  </Text>;
+    const ricetteArr= this.props.navigation.getParam('ricette');
+    const ricetteCat = this.props.posts.reduce(function(accumulatore, valoreCorrente){
+        if (ricetteArr.find((val)=>val==valoreCorrente.id)) {
+           accumulatore.push(valoreCorrente);
+           ;
+        }
+        return accumulatore
+      },[])
+
 
     return(
-      <View style={{ flex: 1,}}>
-        <View style={{backgroundColor: '#e43636', height:HEADER_HEIGHT, paddingTop:STATUSBAR_HEIGHT, justifyContent:'center', alignItems:'center'}}>
-          <Text style={{fontSize:25, color:'#fff'}}>Tutte Le Ricette</Text>
-      </View>
+      <View style={[StyleSheet.absoluteFill,{backgroundColor:'#f5f5f5'}]}>
+      
 
-      <ScrollView style={{backgroundColor: '#f5f5f5',}}>
-      {this.props.posts.map( item =>
+              <ScrollView>
+      {ricetteCat.map( item =>
               <View
               key={item.id} 
               style={styles.containerCard2}
               >
+
+              
               <TouchableOpacity 
-             
+              
               style={styles.containerCard}
               onPress={() =>
                 this.props.navigation.navigate('DettaglioRicetta',{         
@@ -135,9 +143,10 @@ class Ricette extends React.Component {
                         />
                         <Text style={styles.badgeText}>{item.cottura} min</Text>
                       </View>
+
                 </ImageBackground>
                 <View style={styles.catTitle}>
-                  <Text style={{color: '#e43636',paddingRight:5,  fontSize:20, flex:5}}>{item.nome}</Text>
+                  <Text style={{color: '#e43636', paddingRight:5, fontSize:20, flex:5}}>{item.nome}</Text>
                   <TouchableOpacity
                   style={{flex:1, alignSelf:'center', padding:5}}
                   onPress={()=> this.onPressLike(item.id)}
@@ -165,13 +174,10 @@ class Ricette extends React.Component {
               )}
 
             </ScrollView>
-      
-    
     </View>
     );
   }
 }
-
 const mapStateToProps = state => ({
   posts: state.posts.items,
   likes: state.posts.likes,
@@ -180,7 +186,7 @@ const mapStateToProps = state => ({
 
 
 
-export default connect(mapStateToProps, {fetchPosts, fetchLikes, updateLikes, removeLikes, removeLike})(Ricette);
+export default connect(mapStateToProps, {fetchPosts, fetchLikes, updateLikes, removeLikes, removeLike})(Risultato);
 
 const styles = StyleSheet.create({
 
@@ -198,16 +204,20 @@ const styles = StyleSheet.create({
   },
   
   containerCard: {
-
     borderRadius: 10,
-
     overflow: 'hidden',
 
-    borderWidth:2,
-    borderColor:'#fff',
   },
   
+  containerCardCat: {
+    flex:1,
+    borderRadius: 10,
+    overflow: 'hidden',
+
+  },
   containerCard2: {
+    borderWidth:2,
+    borderColor:'#fff',
     borderRadius: 10,
     elevation: 2,
     marginLeft: 5,
@@ -246,7 +256,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 3,
     margin: 5,
-
    },
    badgeText:{
     color: '#fff',
@@ -254,4 +263,4 @@ const styles = StyleSheet.create({
     fontWeight:'bold'
   
    },
-  });
+    });
